@@ -1,0 +1,43 @@
+{% extends 'ecommerce/common.html' %}
+{% load crispy_forms_tags %}
+{% crispy form form.helper %}
+{% block content %}
+<div style="margin:auto;color:white;">
+  {% for message in messages %}
+  <style>
+    .alert {
+      padding: 20px;
+      background-color: #f43636;
+      color: rgb(0, 0, 0);
+    }
+
+    .closebtn {
+      margin-left: 15px;
+      color: rgb(0, 0, 0);
+      font-weight: bold;
+      float: right;
+      font-size: 22px;
+      line-height: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .closebtn:hover {
+      color: rgb(255, 255, 255);
+    }
+  </style>
+  <div class="alert">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <strong>{{message}}</strong>
+  </div>
+  {% endfor %}
+  {% if flag == 0 %}
+  <form class="well form-horizontal" action=" " method="post" enctype="multipart/form-data" id="contact_form">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <input style="margin-top:20px" type="submit" name="Submit" value="Crea">
+  </form>
+  {% endif %}
+</div>
+</div><!-- /.container -->
+{% endblock %}

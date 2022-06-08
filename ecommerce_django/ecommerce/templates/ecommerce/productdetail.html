@@ -1,0 +1,316 @@
+{% extends 'ecommerce/common.html' %}
+{% load crispy_forms_tags %}
+{% crispy form form.helper %}
+{% block content %}
+<style>
+
+    img {
+        max-width: 100%;
+    }
+
+    @media (min-width: 768px) {
+        .buy-grid {
+            padding-top: 3rem;
+            padding-bottom: 5rem;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-areas: "hero-image header""hero-image selection""hero-image specs";
+        }
+    }
+
+    header {
+        grid-area: header;
+    }
+
+    header h1 {
+        margin: 0;
+    }
+
+    .hero-image-wrapper {
+        grid-area: hero-image;
+        height: 100%;
+    }
+
+    @media (min-width: 768px) {
+        .hero-image-element {
+            position: sticky;
+            width: 40%;
+            margin-left: 30%;
+            margin-right: 30%;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .hero-image-elementsec {
+            position: sticky;
+            width: 80%;
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+    }
+
+    .selection {
+        grid-area: selection;
+        padding-bottom: 3rem;
+    }
+
+    .swatch {
+        width: 36px;
+        height: 36px;
+        background-color: #ededed;
+        text-align: center;
+        line-height: 36px;
+        display: inline-block;
+        margin: 8px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #369;
+        /*width: 100%;*/
+        display: block;
+    }
+
+    .swatch.color {
+        background-color: #369;
+    }
+
+    .swatch.color:nth-of-type(2) {
+        background-color: #264d73;
+    }
+
+    .swatch.color:nth-of-type(3) {
+        background-color: #204060;
+    }
+
+    .swatch.color:nth-of-type(4) {
+        background-color: #1a334d;
+    }
+
+    .swatch.color:nth-of-type(5) {
+        background-color: #132639;
+    }
+
+    .specs-table {
+        padding-bottom: 3rem;
+    }
+
+    .specs-table-row {
+        /*display: flex;
+        /*justify-content: space-between;*/
+        padding: 0.5rem 0;
+        border-top: 1px solid #ccc;
+    }
+
+    .spec-table-label {
+        font-weight: 700;
+    }
+
+    .spec-table-description {
+        color: #999;
+    }
+
+    .callout img {
+        width: 100%;
+    }
+
+    .card {
+        width: 400px;
+        height: 400px;
+        margin-right: 20px;
+        background-color: white;
+        box-shadow: 0px 5px 20px #555;
+    }
+
+    .card a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .card:hover .card-image img {
+        width: 100%;
+        filter: grayscale(0);
+    }
+
+    .card-image {
+        height: 150px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-image img {
+        width: 100%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        filter: grayscale(1);
+        transition-property: filter width;
+        transition-duration: 0.3s;
+    }
+
+    .card-body {
+        text-align: center;
+        padding: 15px 20px;
+        box-sizing: border-box;
+    }
+
+    .card-date,
+    .card-title {
+        text-align: center;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .card-date,
+    .card-excerpt {
+        color: #777;
+    }
+</style>
+<div style="color:white;overflow-y: scroll;width: 80%;">
+    <section style="display: flex!important;padding:100px!important" class="buy-grid container">
+        <div style="flex: 1 0 60%!important;" class="hero-image-wrapper">
+            <img src="{{data.immagine.url}}" class="hero-image-element" alt="alt">
+            <div style="margin-top:75px;" class="specs-table-row hero-image-elementsec">
+                <div class="spec-table-label" style="font-size:25px;">Descrizione</div>
+                <div class="spec-table-description">{{data.scheda_tecnica}}</div>
+            </div>
+            <div class="specs-table-row hero-image-elementsec">
+                {% if request.user.is_authenticated %}
+                {% if request.user.id != data.fornitore.id %}
+                <button class="btn btn-primary btn-large btn-full"
+                    onclick="location.href='{% url 'addrecensione' data.id %}'"
+                    style="margin-top:15px;cursor: pointer;color:white;">INSERISCI UNA RECENSIONE
+                </button>
+                <button class="btn btn-primary btn-large btn-full"
+                    onclick="location.href='{% url 'addrecensionefornitore' data.fornitore.id %}'"
+                    style="margin-top:15px;cursor: pointer;color:white;">RECENSIONE DEL FORNITORE
+                </button>
+                {% endif %}
+                {% if request.user.id == data.fornitore.id %}
+                <button class="btn btn-primary btn-large btn-full"
+                    onclick="location.href='{% url 'updateproduct' data.id %}'"
+                    style="margin-top:15px;cursor: pointer;color:white;">MODIFICA PRODOTTO</button>
+                <button class="btn btn-primary btn-large btn-full"
+                    onclick="location.href='{% url 'deleteproduct' data.id %}'"
+                    style="margin-top:15px;cursor: pointer;color:white;">ELIMINA PRODOTTO</button>
+                {% endif %}
+                {% if recensioni|length == 0 %}
+                <div style="font-size: 25px;" class="spec-table-label">Nessuna recensione al momento</div>
+                {% endif%}
+
+                {% endif%}
+                {% if not request.user.is_authenticated %}
+                <div style="font-size: 20px;color: red;" class="spec-table-label">Devi loggarti per visualizzare le
+                    recensioni!</div>
+                {% endif%}
+            </div>
+            <div class="specs-table-row hero-image-elementsec">
+                {% if request.user.is_authenticated %}
+                <div style="font-size: 25px;" class="spec-table-label">Prodotti Consigliati</div>
+                <span style="font-weight: bold;margin-left:0px!important">Altri utenti hanno comprato anche</span>
+                <div style="flex-wrap: wrap;display: flex;border-radius: 10px;height: 700px;">
+                    {% for prodraccomandato in productraccomandation %}
+                        <div style="margin-top:20px;flex: 1 0 23%;cursor: pointer;" class="card">
+                            <a onclick='location.href="{% url 'productDetail' prodraccomandato.id %}"'>
+                                <div class="card-image">
+                                    <img src="{{prodraccomandato.immagine.url}}" alt="Orange" />
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-date">
+                                        <time>{{prodraccomandato.fornitore}}</time>
+                                    </div>
+                                    <div class="card-title">
+                                        <h3>{{prodraccomandato.titolo}}</h3>
+                                    </div>
+                                    <div class="card-excerpt">
+                                        <p> {{prodraccomandato.scheda_tecnica|slice:":50"|add:"..."}}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                    <div style="margin-top:20px;flex: 1 0 23%;"></div>
+                    <div style="margin-top:20px;flex: 1 0 23%;"></div>
+                </div>
+                {% endif%}
+            </div>
+        </div>
+        <header style="flex: 1 0 40%!important;font-size: 25px;" class="header">
+            <h1>{{data.titolo}}</h1>
+            {% if not request.user.is_authenticated %}
+                <p>Prodotto fornito da <span style="font-weight: bold;">. . .</span></p>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                <p>Prodotto fornito da <span style="color:gold;font-weight: bold;">{{data.fornitore.username}} </span></p>
+                <p style="font-size: 17px;font-weight: bold;">Valutazione fornitore : <span
+                        style="color:gold;">{{data.fornitore.first_name}}<img
+                            style="margin-bottom: 0px!important;width: 20px;height: 20px;"
+                            src="https://img.icons8.com/arcade/64/000000/experimental-star-arcade.png" /></span></p>
+            {% endif %}
+            <h2>€ {{data.prezzo}}</h2>
+            {% if not request.user.is_authenticated %}
+                <div style="font-size: 18px;color: red;" class="spec-table-label">Devi loggarti per poter visualizzare
+                    tutte le info del prodotto</div>
+            {% endif%}
+            {% if request.user.is_authenticated %}
+                {% if request.user.id == data.fornitore.id %}
+                    <h3 style="color:green">Questo è un tuo prodotto</h3>
+                {% endif %}
+                {% if request.user.id != data.fornitore.id and data.fornitore.last_name != "delete" %}
+                    <h3>Seleziona quantità:</h3>
+                    <form class="well form-horizontal" action=" " method="post" enctype="multipart/form-data" id="contact_form">
+                        {% csrf_token %}
+                        {{ form | crispy }}
+                        <input style="margin-top:20px" type="submit" name="Submit" value="Compra">
+                    </form>
+                    {% for message in messages %}
+                        <p style="color:green;text-align:center;">{{message}}</p>
+                    {% endfor %}
+                {% endif %}
+                {% if data.fornitore.last_name == "delete" %}
+                    <div style="font-size: 15px;color: red;" class="spec-table-label">Questo prodotto non è più vendibile a
+                        causa delle basse recensioni del fornitore.</div>
+                {% endif %}
+            {% endif%}
+            <div style = "font-size: 15px!important;">
+            {% if request.user.is_authenticated %}
+                {% if recensioni|length > 0 %}
+                    <div style="margin-top: 20px;font-size: 25px;" class="spec-table-label">Recensioni del prodotto</div>
+                    <span style="font-weight: bold;margin-left:0px!important">Valutazione media :
+                        {{data.media_valutazione|stringformat:".3s"}} <img
+                            style="margin-bottom: 0px!important;width: 20px;height: 20px;"
+                            src="https://img.icons8.com/arcade/64/000000/experimental-star-arcade.png" /></span>
+                    <div
+                        style="margin-top:20px;border-radius: 10px;background-color:rgb(0 0 0 / 49%);height: 200px;overflow-y: scroll">
+                        {% for recensione in recensioni %}
+                            <div style="margin-left: 20px;margin-top: 20px;" class="spec-table-label">Da
+                                {{recensione.user_recensione.username}}</div>
+                            <div style="margin-left: 20px;font-weight: bold; color:gold" class="spec-table-description">
+                                {{recensione.stelle}} <img style="margin-bottom: 0px!important;width: 20px;height: 20px;"
+                                    src="https://img.icons8.com/arcade/64/000000/experimental-star-arcade.png" />
+                            </div>
+                            <div style="margin-left: 20px;" class="spec-table-description">{{recensione.descrizione}}</div>
+                        {% endfor %}
+                    </div>
+                {% endif%}
+                <div style="margin-top:20px;font-size: 25px;" class="spec-table-label">Recensioni del fornitore</div>
+                <div
+                    style="border-radius: 10px;background-color:rgb(0 0 0 / 49%);height: 300px;overflow-y: scroll">
+                    {% for recensionefornitore in recensionifornitore %}
+                        <div style="margin-left: 20px;margin-top: 20px;" class="spec-table-label">Da
+                            {{recensionefornitore.user_recensione.username}}</div>
+                        <div style="margin-left: 20px;font-weight: bold; color:gold" class="spec-table-description">
+                            {{recensionefornitore.stelle}} <img style="margin-bottom: 0px!important;width: 20px;height: 20px;"
+                                src="https://img.icons8.com/arcade/64/000000/experimental-star-arcade.png" />
+                        </div>
+                        <div style="margin-left: 20px;" class="spec-table-description">{{recensionefornitore.recensione}}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+        </header>
+        
+    </section>
+</div>
+{% endblock %}

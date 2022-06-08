@@ -1,0 +1,13 @@
+{% extends 'ecommerce/common.html' %}
+{% load crispy_forms_tags %}
+{% crispy form form.helper %}
+{% block content %}
+<div style="margin:auto;color:white;">
+  <form class="well form-horizontal" action=" " method="post" enctype="multipart/form-data" id="contact_form">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <input style="margin-top:20px" type="submit" name="Submit" value="Aggiorna">
+  </form>
+</div>
+</div><!-- /.container -->
+{% endblock %}
