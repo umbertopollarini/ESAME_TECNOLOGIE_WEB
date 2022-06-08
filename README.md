@@ -1,6 +1,6 @@
-#Installazione Applicazione Web
+# Installazione Applicazione Web
 
-###Segui questa guida per la corretta installazione
+## Segui questa guida per la corretta installazione
 Per utilizzare questa webapp è necessario aver installato python (testato da 3.8+). Suggerisco di usare virtualenv (o altro equivalente), se non ce l'hai, puoi installarlo con il tuo gestore di pacchetti. Per me su MacOs con bash, sarà qualcosa del genere:
 
 `pip install virtualenv`
